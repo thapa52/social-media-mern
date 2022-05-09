@@ -23,15 +23,64 @@ exports.register = async (req, res) => {
       },
     });
 
-    res.status(201).json({ 
-        success: true, 
-        user 
+    const token = await user.generateToken();
+
+    const options = {
+      expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+    };
+
+    res.status(201).cookie("token", token, options).json({
+      success: true,
+      user,
+      token,
     });
-    
   } catch (error) {
     res.status(500).json({
       success: false,
       error: error.message,
+    });
+  }
+};
+
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user) {
+      res.status(400).json({
+        success: false,
+        message: "User doesn't exists",
+      });
+    }
+
+    const isMatch = await user.matchPassword(password);
+
+    if (!isMatch) {
+      res.status(400).json({
+        success: false,
+        message: "Incorrect password",
+      });
+    }
+
+    const token = await user.generateToken();
+
+    const options = {
+      expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+    };
+
+    res.status(200).cookie("token", token, options).json({
+      success: true,
+      user,
+      token,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };
