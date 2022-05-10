@@ -84,3 +84,34 @@ exports.login = async (req, res) => {
     });
   }
 };
+
+exports.followUser = async (req, res) => {
+  try {
+    const userToFollow = await User.findById(req.params.id);
+    const loggedInUser = await User.findById(req.user._id);
+
+    if(!userToFollow){
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      })
+    }
+
+    loggedInUser.following.push(userToFollow._id);
+    userToFollow.followers.push(loggedInUser._id);
+
+    await loggedInUser.save();
+    await userToFollow.save();
+
+    res.status(201).json({
+      success:true,
+      message: "User Followed"
+    })
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    })
+  }
+}
