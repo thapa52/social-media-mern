@@ -1,7 +1,13 @@
 const express = require("express");
-const { register, login, followAndUnfollowUser, logout,  } = require("../controllers/user");
+const {
+  register,
+  login,
+  followAndUnfollowUser,
+  logout,
+  updatePassword,
+  updateProfile,
+} = require("../controllers/user");
 const { isAuthenticated } = require("../middlewares/auth");
-
 
 const router = express.Router();
 
@@ -13,5 +19,8 @@ router.route("/logout").get(logout);
 
 router.route("/follow/:id").get(isAuthenticated, followAndUnfollowUser);
 
+router.route("/update/password").put(isAuthenticated, updatePassword);
+
+router.route("/update/profile").put(isAuthenticated, updateProfile);
 
 module.exports = router;
