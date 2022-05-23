@@ -1,4 +1,5 @@
 const { response } = require("../app");
+const Post = require("../models/Post");
 const User = require("../models/User");
 
 exports.register = async (req, res) => {
@@ -155,11 +156,11 @@ exports.updatePassword = async (req, res) => {
 
     const { oldPassword, newPassword } = req.body;
 
-    if(!oldPassword || !newPassword) {
+    if (!oldPassword || !newPassword) {
       return res.status(400).json({
-        success:false,
+        success: false,
         message: "Please provide old and new password",
-      })
+      });
     }
 
     const isMatch = await user.matchPassword(oldPassword);
@@ -206,6 +207,39 @@ exports.updateProfile = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Profile Updated",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.deleteMyProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    const posts = user.posts;
+
+    await user.remove();
+
+    // logout user after deleting profile
+
+    res.cookie("token", null, {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+    });
+
+    // delete all posts of user
+
+    for (let i = 0; i < posts.length; i++) {
+      const post = await Post.findById(posts[i]);
+      await post.remove();
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile Deleted",
     });
   } catch (error) {
     res.status(500).json({
