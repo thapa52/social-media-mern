@@ -10,6 +10,7 @@ const {
   myProfile,
   getUserProfile,
   getAllUsers,
+  forgotPassword,
 } = require("../controllers/user");
 const { isAuthenticated } = require("../middlewares/auth");
 
@@ -35,5 +36,6 @@ router.route("/user/:id").get(isAuthenticated, getUserProfile);
 
 router.route("/users").get(isAuthenticated, getAllUsers);
 
+router.route("/forgot/password").post(isAuthenticated, forgotPassword);
 
 module.exports = router;

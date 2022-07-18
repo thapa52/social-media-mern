@@ -1,6 +1,7 @@
 const { response } = require("../app");
 const Post = require("../models/Post");
 const User = require("../models/User");
+const { sendEmail } = require("../middlewares/sendEmail");
 
 exports.register = async (req, res) => {
   try {
@@ -241,7 +242,7 @@ exports.deleteMyProfile = async (req, res) => {
     }
 
     // removing user from followers following
-    for (let i=0; i<followers.length; i++){
+    for (let i = 0; i < followers.length; i++) {
       const follower = await User.findById(followers[i]);
 
       const index = follower.following.indexOf(userId);
@@ -250,14 +251,13 @@ exports.deleteMyProfile = async (req, res) => {
     }
 
     // removing user from following's follower
-    for (let i=0; i<following.length; i++){
+    for (let i = 0; i < following.length; i++) {
       const follows = await User.findById(following[i]);
 
       const index = follows.followers.indexOf(userId);
       follows.followers.splice(index, 1);
       await follows.save();
     }
-
 
     res.status(200).json({
       success: true,
@@ -273,61 +273,105 @@ exports.deleteMyProfile = async (req, res) => {
 
 exports.myProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate("posts")
-    
+    const user = await User.findById(req.user._id).populate("posts");
+
     res.status(200).json({
       success: true,
       user,
-    })
+    });
   } catch (error) {
     res.status(500).json({
-      success:false,
+      success: false,
       message: error.message,
-    })
+    });
   }
+};
 
-}
-
-exports.getUserProfile = async (req,res) => {
+exports.getUserProfile = async (req, res) => {
   try {
-    
     const user = await User.findById(req.params.id).populate("posts");
 
-    if(!user){
+    if (!user) {
       return res.status(404).json({
-        success:false,
+        success: false,
         message: "User Not Found",
-      })
+      });
     }
 
     res.status(200).json({
       success: true,
       user,
-    })
-
-
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: error.message,
-    })
+    });
   }
-}
+};
 
-exports.getAllUsers = async (req,res) => {
+exports.getAllUsers = async (req, res) => {
   try {
-    
     const user = await User.find({});
 
     res.status(200).json({
-      success:true,
+      success: true,
       user,
-    })
-
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: error.message,
-    })
+    });
   }
-}
+};
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const resetPasswordToken = user.getResetPasswordToken();
+
+    await user.save();
+
+    const resetUrl = `${req.protocol}://${req.get(
+      "host"
+    )}/api/pt/password/reset/${resetPasswordToken}`;
+
+    const message = `Reset Your Password by clicking on the link below: \n\n ${resetUrl}`;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: "Reset Password",
+        message,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: `Email send to ${user.email}`,
+      });
+    } catch (error) {
+      user.resetPasswordToken = undefined;
+      user.reserPasswordExpire = undefined;
+      await user.save();
+
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
