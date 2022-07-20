@@ -1,19 +1,45 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getFollowingPosts } from "../../Actions/User";
 import Post from "../Post/Post";
 import User from "../User/User";
+import Loader from "../Loader/Loader";
 import "./Home.css";
+import { Typography } from "@mui/material";
 
 const Home = () => {
-  return (
+  const dispatch = useDispatch();
+
+  const { loading, posts, error } = useSelector(
+    (state) => state.postOfFollowing
+  );
+
+  useEffect(() => {
+    dispatch(getFollowingPosts());
+  }, []);
+
+  return loading ? (
+    <Loader />
+  ) : (
     <div className="home">
       <div className="homeleft">
-        <Post
-          postImage={
-            "https://media.istockphoto.com/photos/image-of-open-antique-book-on-wooden-table-with-glitter-overlay-picture-id1354441996?b=1&k=20&m=1354441996&s=170667a&w=0&h=O4JDagXhIh1N13PNN6G4_L5KB5QPZryin7FOrZnzYvc="
-          }
-          ownerName={"Pradeep Thapa"}
-          caption={"This is a sample post"}
-        />
+        {posts && posts.length > 0 ? (
+          posts.map((post) => (
+            <Post
+              key={post._id}
+              postId={post._id}
+              caption={post.caption}
+              postImage={post.image.url}
+              likes={post.likes}
+              comments={post.comments}
+              ownerImage={post.owner.avatar.url}
+              ownerName={post.owner.name}
+              ownerId={post.owner._id}
+            />
+          ))
+        ) : (
+          <Typography variant="h6">No posts yet</Typography>
+        )}
       </div>
       <div className="homeright">
         <User
