@@ -7,7 +7,7 @@ export const loginUser = (email, password) => async (dispatch) => {
     });
 
     const { data } = await axios.post(
-      "/api/pt/login",
+      `/api/pt/login`,
       { email, password },
       {
         headers: {
@@ -34,7 +34,7 @@ export const loadUser = () => async (dispatch) => {
       type: "LoadUserRequest",
     });
 
-    const { data } = await axios.get("/api/pt/me");
+    const { data } = await axios.get(`/api/pt/me`);
 
     dispatch({
       type: "LoadUserSuccess",
@@ -54,7 +54,7 @@ export const getFollowingPosts = () => async (dispatch) => {
       type: "postOfFollowingRequest",
     });
 
-    const { data } = await axios.get("/api/pt/posts");
+    const { data } = await axios.get(`/api/pt/posts`);
 
     dispatch({
       type: "postOfFollowingSuccess",
@@ -74,7 +74,7 @@ export const getAllUsers = () => async (dispatch) => {
       type: "allUsersRequest",
     });
 
-    const { data } = await axios.get("/api/pt/users");
+    const { data } = await axios.get(`/api/pt/users`);
 
     dispatch({
       type: "allUsersSuccess",
