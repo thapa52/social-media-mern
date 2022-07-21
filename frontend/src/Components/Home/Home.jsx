@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getFollowingPosts } from "../../Actions/User";
+import { getAllUsers, getFollowingPosts } from "../../Actions/User";
 import Post from "../Post/Post";
 import User from "../User/User";
 import Loader from "../Loader/Loader";
@@ -14,11 +14,16 @@ const Home = () => {
     (state) => state.postOfFollowing
   );
 
+  const { users, loading: usersLoading } = useSelector(
+    (state) => state.allUsers
+  );
+
   useEffect(() => {
     dispatch(getFollowingPosts());
-  }, []);
+    dispatch(getAllUsers());
+  }, [dispatch]);
 
-  return loading ? (
+  return loading === true || usersLoading === true ? (
     <Loader />
   ) : (
     <div className="home">
@@ -42,13 +47,13 @@ const Home = () => {
         )}
       </div>
       <div className="homeright">
-        <User
-          userId={"user.id"}
-          name={"Pradeep"}
-          avatar={
-            "https://www.whatsappimages.in/wp-content/uploads/2021/07/Top-HD-sad-quotes-for-whatsapp-status-in-hindi-Pics-Images-Download-Free.gif"
-          }
-        />
+        {users && (users.length > 0) ? (
+          users.map((user) => (
+            <User userId={user._id} name={user.name} avatar={user.avatar.url} /> 
+          ))
+        ) : (
+          <Typography>No Users Yet</Typography>
+        )}
       </div>
     </div>
   );
