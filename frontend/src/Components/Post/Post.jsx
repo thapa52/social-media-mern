@@ -1,4 +1,4 @@
-import { Avatar, Button, Typography } from "@mui/material";
+import { Avatar, Button, Typography, Dialog } from "@mui/material";
 import {
   MoreVert,
   Favorite,
@@ -12,6 +12,7 @@ import "./Post.css";
 import { useDispatch, useSelector } from "react-redux";
 import { likePost } from "../../Actions/Post";
 import { getFollowingPosts } from "../../Actions/User";
+import User from "../User/User";
 
 const Post = ({
   postId,
@@ -26,14 +27,21 @@ const Post = ({
   isAccount = false,
 }) => {
   const [liked, setLiked] = useState(false);
+  const [likesUser, setLikesUser] = useState(false);
 
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
 
   const handleLike = async () => {
     setLiked(!liked);
+
     await dispatch(likePost(postId));
-    dispatch(getFollowingPosts());
+
+    if (isAccount) {
+      console.log(`show me my posts`);
+    } else {
+      dispatch(getFollowingPosts());
+    }
   };
 
   useEffect(() => {
@@ -82,6 +90,8 @@ const Post = ({
           cursor: "pointer",
           margin: "1vmax 2vmax",
         }}
+        onClick={() => setLikesUser(!likesUser)}
+        disabled={likes.length === 0 ? true : false}
       >
         <Typography>{likes.length} Likes</Typography>
       </button>
@@ -101,6 +111,20 @@ const Post = ({
           </Button>
         ) : null}
       </div>
+
+      <Dialog open={likesUser} onClose={() => setLikesUser(!likesUser)}>
+        <div className="DialogBox">
+          <Typography variant="h4">Liked By</Typography>
+          {likes.map((like) => (
+            <User
+              key={like._id}
+              userId={like._id}
+              name={like.name}
+              avatar={like.avatar.url}
+            />
+          ))}
+        </div>
+      </Dialog>
     </div>
   );
 };
