@@ -313,11 +313,11 @@ exports.getUserProfile = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const user = await User.find({});
+    const users = await User.find({});
 
     res.status(200).json({
       success: true,
-      user,
+      users,
     });
   } catch (error) {
     res.status(500).json({
