@@ -6,9 +6,12 @@ import {
   ChatBubbleOutline,
   DeleteOutline,
 } from "@mui/icons-material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Post.css";
+import { useDispatch, useSelector } from "react-redux";
+import { likePost } from "../../Actions/Post";
+import { getFollowingPosts } from "../../Actions/User";
 
 const Post = ({
   postId,
@@ -24,9 +27,22 @@ const Post = ({
 }) => {
   const [liked, setLiked] = useState(false);
 
-  const handleLike = () => {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
+
+  const handleLike = async () => {
     setLiked(!liked);
+    await dispatch(likePost(postId));
+    dispatch(getFollowingPosts());
   };
+
+  useEffect(() => {
+    likes.forEach((item) => {
+      if (item._id === user._id) {
+        setLiked(true);
+      }
+    });
+  }, [likes, user._id]);
 
   return (
     <div className="post">
@@ -67,7 +83,7 @@ const Post = ({
           margin: "1vmax 2vmax",
         }}
       >
-        <Typography>5 Likes</Typography>
+        <Typography>{likes.length} Likes</Typography>
       </button>
 
       <div className="postFooter">
