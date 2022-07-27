@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useAlert } from "react-alert";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getMyPosts } from "../../Actions/User";
+import { getMyPosts, logoutUser } from "../../Actions/User";
 import Loader from "../Loader/Loader";
 import Post from "../Post/Post";
 import User from "../User/User";
@@ -19,6 +19,11 @@ const Account = () => {
 
   const [followersToggle, setFollowersToggle] = useState(false);
   const [followingToggle, setFollowingToggle] = useState(false);
+
+  const logoutHandler = () => {
+    dispatch(logoutUser());
+    alert.success("Logged out successfully");
+  };
 
   useEffect(() => {
     dispatch(getMyPosts());
@@ -89,7 +94,9 @@ const Account = () => {
           <Typography>{user.posts.length}</Typography>
         </div>
 
-        <Button variant="contained">Logout</Button>
+        <Button variant="contained" onClick={logoutHandler}>
+          Logout
+        </Button>
         <Link to="/update/profile">Edit Profile</Link>
         <Link to="/update/password">Change Password</Link>
         <Button variant="text" style={{ color: "red", margin: "2vmax" }}>
