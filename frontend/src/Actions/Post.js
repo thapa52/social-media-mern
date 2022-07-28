@@ -71,3 +71,34 @@ export const deleteCommentOnPost = (id, commentId) => async (dispatch) => {
     });
   }
 };
+
+export const createNewPost = (caption, image) => async (dispatch) => {
+  try {
+    dispatch({
+      type: "newPostRequest",
+    });
+
+    const { data } = await axios.post(
+      `/api/pt/post/upload`,
+      {
+        caption,
+        image,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    dispatch({
+      type: "newPostSuccess",
+      payload: data.message,
+    });
+  } catch (error) {
+    dispatch({
+      type: "newPostFailure",
+      payload: error.response.data.message,
+    });
+  }
+};
