@@ -10,8 +10,13 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Post.css";
 import { useDispatch, useSelector } from "react-redux";
-import { addCommentOnPost, likePost, updatePost } from "../../Actions/Post";
-import { getFollowingPosts, getMyPosts } from "../../Actions/User";
+import {
+  addCommentOnPost,
+  deletePost,
+  likePost,
+  updatePost,
+} from "../../Actions/Post";
+import { getFollowingPosts, getMyPosts, loadUser } from "../../Actions/User";
 import User from "../User/User";
 import CommentCard from "../CommentCard/CommentCard";
 
@@ -65,6 +70,12 @@ const Post = ({
     e.preventDefault();
     dispatch(updatePost(captionValue, postId));
     dispatch(getMyPosts());
+  };
+
+  const deletePostHandler = async () => {
+    await dispatch(deletePost(postId));
+    dispatch(getMyPosts());
+    dispatch(loadUser());
   };
 
   useEffect(() => {
@@ -129,7 +140,7 @@ const Post = ({
         </Button>
 
         {isDelete ? (
-          <Button>
+          <Button onClick={deletePostHandler}>
             <DeleteOutline />
           </Button>
         ) : null}
