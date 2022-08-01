@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import "./Post.css";
 import { useDispatch, useSelector } from "react-redux";
 import { addCommentOnPost, likePost } from "../../Actions/Post";
-import { getFollowingPosts } from "../../Actions/User";
+import { getFollowingPosts, getMyPosts } from "../../Actions/User";
 import User from "../User/User";
 import CommentCard from "../CommentCard/CommentCard";
 
@@ -41,7 +41,7 @@ const Post = ({
     await dispatch(likePost(postId));
 
     if (isAccount) {
-      console.log(`show me my posts`);
+      dispatch(getMyPosts());
     } else {
       dispatch(getFollowingPosts());
     }
@@ -53,7 +53,7 @@ const Post = ({
     await dispatch(addCommentOnPost(postId, commentValue));
 
     if (isAccount) {
-      console.log(`show me my posts`);
+      dispatch(getMyPosts());
     } else {
       dispatch(getFollowingPosts());
     }
