@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useAlert } from "react-alert";
 import { useDispatch, useSelector } from "react-redux";
 import { createNewPost } from "../../Actions/Post";
+import { loadUser } from "../../Actions/User";
 import "./NewPost.css";
 
 const NewPost = () => {
@@ -27,9 +28,10 @@ const NewPost = () => {
     };
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    dispatch(createNewPost(caption, image));
+    await dispatch(createNewPost(caption, image));
+    dispatch(loadUser());
   };
 
   useEffect(() => {
