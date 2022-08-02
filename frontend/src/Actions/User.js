@@ -126,3 +126,32 @@ export const logoutUser = (email, password) => async (dispatch) => {
     });
   }
 };
+
+export const registerUser =
+  (name, email, password, avatar) => async (dispatch) => {
+    try {
+      dispatch({
+        type: "RegisterRequest",
+      });
+
+      const { data } = await axios.post(
+        `/api/pt/register`,
+        { name, email, password, avatar },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      dispatch({
+        type: "RegisterSuccess",
+        payload: data.user,
+      });
+    } catch (error) {
+      dispatch({
+        type: "RegisterFailure",
+        payload: error.response.data.message,
+      });
+    }
+  };
