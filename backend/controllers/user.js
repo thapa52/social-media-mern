@@ -3,13 +3,13 @@ const Post = require("../models/Post");
 const User = require("../models/User");
 const { sendEmail } = require("../middlewares/sendEmail");
 const crypto = require("crypto");
+const cloudinary = require("cloudinary");
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, avatar } = req.body;
 
     let user = await User.findOne({ email });
-
     if (user) {
       return res.status(400).json({
         success: false,
@@ -17,13 +17,17 @@ exports.register = async (req, res) => {
       });
     }
 
+    const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+      folder: "avatars",
+    });
+
     user = await User.create({
       name,
       email,
       password,
       avatar: {
-        public_id: "sampleid",
-        url: "sampleurl",
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
       },
     });
 
