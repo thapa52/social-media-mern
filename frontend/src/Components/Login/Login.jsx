@@ -11,13 +11,13 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const { error } = useSelector((state) => state.user);
+  const { message } = useSelector((state) => state.like);
 
   const dispatch = useDispatch();
   const alert = useAlert();
 
   const loginHandler = (e) => {
     e.preventDefault();
-
     dispatch(loginUser(email, password));
   };
 
@@ -26,7 +26,11 @@ const Login = () => {
       alert.error(error);
       dispatch({ type: "clearErrors" });
     }
-  }, [dispatch, error, alert]);
+    if (message) {
+      alert.success(message);
+      dispatch({ type: "clearMessage" });
+    }
+  }, [dispatch, error, alert, message]);
 
   return (
     <div className="login">
