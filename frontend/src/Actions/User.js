@@ -212,3 +212,23 @@ export const updatePassword =
       });
     }
   };
+
+export const deleteMyProfile = () => async (dispatch) => {
+  try {
+    dispatch({
+      type: "deleteProfileRequest",
+    });
+
+    const { data } = await axios.delete(`/api/pt/delete/me`);
+
+    dispatch({
+      type: "deleteProfileSuccess",
+      payload: data.message,
+    });
+  } catch (error) {
+    dispatch({
+      type: "deleteProfileFailure",
+      payload: error.response.data.message,
+    });
+  }
+};
