@@ -260,3 +260,31 @@ export const forgotPassword = (email) => async (dispatch) => {
     });
   }
 };
+
+export const resetPassword = (token, password) => async (dispatch) => {
+  try {
+    dispatch({
+      type: "resetPasswordRequest",
+    });
+
+    const { data } = await axios.put(
+      `/api/pt/password/reset/${token}`,
+      { password },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    dispatch({
+      type: "resetPasswordSuccess",
+      payload: data.message,
+    });
+  } catch (error) {
+    dispatch({
+      type: "resetPasswordFailure",
+      payload: error.response.data.message,
+    });
+  }
+};
