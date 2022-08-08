@@ -11,6 +11,7 @@ import NewPost from "./Components/NewPost/NewPost";
 import Register from "./Components/Register/Register";
 import UpdateProfile from "./Components/UpdateProfile/UpdateProfile";
 import UpdatePassword from "./Components/UpdatePassword/UpdatePassword";
+import ForgotPassword from "./Components/ForgotPassword/ForgotPassword";
 
 function App() {
   const dispatch = useDispatch();
@@ -44,6 +45,10 @@ function App() {
         <Route
           path="/update/password"
           element={isAuthenticated ? <UpdatePassword /> : <Login />}
+        />
+        <Route
+          path="/forgot/password"
+          element={isAuthenticated ? <UpdatePassword /> : <ForgotPassword />}
         />
       </Routes>
     </Router>

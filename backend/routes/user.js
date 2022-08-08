@@ -40,7 +40,7 @@ router.route("/user/:id").get(isAuthenticated, getUserProfile);
 
 router.route("/users").get(isAuthenticated, getAllUsers);
 
-router.route("/forgot/password").post(isAuthenticated, forgotPassword);
+router.route("/forgot/password").post(forgotPassword);
 
 router.route("/password/reset/:token").put(resetPassword);
 

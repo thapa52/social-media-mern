@@ -111,6 +111,18 @@ export const likeReducer = createReducer(initialState, {
     state.error = action.payload;
   },
 
+  forgotPasswordRequest: (state) => {
+    state.loading = true;
+  },
+  forgotPasswordSuccess: (state, action) => {
+    state.loading = false;
+    state.message = action.payload;
+  },
+  forgotPasswordFailure: (state, action) => {
+    state.loading = false;
+    state.error = action.payload;
+  },
+
   clearErrors: (state) => {
     state.error = null;
   },
